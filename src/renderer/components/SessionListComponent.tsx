@@ -1,3 +1,4 @@
+
 import { DroneSession, SessionStatus } from "../../domain/Session";
 import { SessionEntryComponent } from "./SessionEntryComponent";
 
@@ -19,5 +20,4 @@ export function SessionListComponent(
         </ul>
     )
 }
-
 

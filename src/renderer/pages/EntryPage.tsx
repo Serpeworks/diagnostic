@@ -84,6 +84,10 @@ export function EntryPage() {
         );
 
         if (result.isOk()) {
+            // Save host and port to localStorage
+            localStorage.setItem("host", host);
+            localStorage.setItem("port", port.toString());
+
             dispatch({ type: "SUCCESS" })
         } else {
             dispatch({ type: "FAIL", error: result.error.message })

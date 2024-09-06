@@ -1,7 +1,7 @@
 import React, { useEffect } from "react";
 import { StatusLineComponent } from "../components/status/StatusLineComponent";
 import { ServerStatus } from "../../domain/ServerStatus";
-import { GetRoot, GetSessionList, GetEnvironment } from "../../api/operations"; // Added GetEnvironment
+import { GetRoot, GetSessionList, GetEnvironment } from "../../api/operations";
 import { SessionListComponent } from "../components/SessionListComponent";
 import { SessionList } from "../../domain/Session";
 import { MapComponent } from "../components/map/MapComponent";
@@ -53,9 +53,13 @@ function reduce(state: State, action: Action): State {
 const STATUS_INTERVAL = 200;
 
 export function DashPage() {
-    const host = "localhost";
-    const port = 8080;
+    // Retrieve host and port from localStorage
+    const storedHost = localStorage.getItem("host");
+    const storedPort = localStorage.getItem("port");
 
+    // Fallback if not found
+    const host = storedHost || "localhost"; // Default value if not available
+    const port = storedPort ? parseInt(storedPort, 10) : 8080; // Default to 8080
 
     const [state, dispatch] = React.useReducer(reduce, {
         tag: "LOADING", // Initial state set to LOADING before fetching data
@@ -74,7 +78,6 @@ export function DashPage() {
 
         return () => clearInterval(intervalId);
     }, []);
-
 
     async function initialize() {
         try {
@@ -100,7 +103,6 @@ export function DashPage() {
             dispatch({ type: "SET_ERROR", message: "An error occurred while initializing." });
         }
     }
-
 
     async function updateStatus() {
         const result = await GetRoot(host, port);
@@ -140,7 +142,8 @@ export function DashPage() {
         <div className="page-dash">
             <div className="page-dash-interior">
                 <SessionListComponent sessions={state.session_list.sessions} />
-                <MapComponent environment={state.environment} session_list={state.session_list} />             </div>
+                <MapComponent environment={state.environment} session_list={state.session_list} />
+            </div>
             <StatusLineComponent status={state.status} />
         </div>
     );

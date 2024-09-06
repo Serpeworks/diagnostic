@@ -30,8 +30,8 @@ export function SessionEntryComponent(
         <li className="session">
             <a>System ID: {session.system_id}</a>
             <a>Agent ID: {hexify(session.agent_id)}</a>
+            <br/>
             <a>Session ID: {hexify(session.session_id)}</a>
-            <SessionStateComponent state={session.session_status} />
         </li>
     );
 }

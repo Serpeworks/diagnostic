@@ -91,6 +91,22 @@ body {
     padding-right: var(--spacing-base);
 }
 
+.empty-session-list {
+    height: 100%;
+    width: 100%;
+    display: flex;
+    flex-direction: column;
+    flex-wrap: nowrap;
+
+    flex: 1;
+
+    justify-content: center;
+    align-items: center;
+
+    list-style-type: none;
+    padding: var(--spacing-extendedBase);
+    margin: 0;
+}
 
 .session-list {
     height: 100%;
