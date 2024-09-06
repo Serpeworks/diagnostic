@@ -50,7 +50,7 @@ function reduce(state: State, action: Action): State {
     }
 }
 
-const STATUS_INTERVAL = 100;
+const STATUS_INTERVAL = 200;
 
 export function DashPage() {
     const host = "localhost";
@@ -78,16 +78,20 @@ export function DashPage() {
 
     async function initialize() {
         try {
-            const statusResult = await GetRoot(host, port);
-            const sessionResult = await GetSessionList(host, port);
-            const envResult = await GetEnvironment(host, port);
+            const statusResult = GetRoot(host, port);
+            const sessionResult = GetSessionList(host, port);
+            const envResult = GetEnvironment(host, port);
 
-            if (envResult.isOk() && statusResult.isOk() && sessionResult.isOk()) {
+            const status = await statusResult;
+            const session = await sessionResult;
+            const environment = await envResult;
+
+            if (status.isOk() && session.isOk() && environment.isOk()) {
                 dispatch({
                     type: "LOAD_ALL",
-                    status: statusResult.value,
-                    session_list: sessionResult.value,
-                    environment: envResult.value,
+                    status: status.value,
+                    session_list: session.value,
+                    environment: environment.value,
                 });
             } else {
                 dispatch({ type: "SET_ERROR", message: "Error fetching information." });
@@ -118,7 +122,7 @@ export function DashPage() {
 
     if (state.tag === "LOADING") {
         return (
-            <div>
+            <div className="page-entry">
                 <p>Loading...</p>
             </div>
         );
@@ -126,7 +130,7 @@ export function DashPage() {
 
     if (state.tag === "ERROR") {
         return (
-            <div>
+            <div className="page-entry">
                 <p>Error: {state.message}</p>
             </div>
         );

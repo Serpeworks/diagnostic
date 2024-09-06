@@ -1,5 +1,5 @@
 import React, { useMemo } from "react";
-import { GoogleMap, Polygon, Marker, useLoadScript, Rectangle } from "@react-google-maps/api";
+import { GoogleMap, Polygon, Marker, useLoadScript, Rectangle, Polyline } from "@react-google-maps/api";
 import { GetEnvironmentVariable } from "../../../misc/get_env";
 import { Environment } from "../../../domain/Environment";
 import { DroneSession, SessionList } from "../../../domain/Session";
@@ -61,7 +61,7 @@ const options = {
     mapTypeControl: false,
     fullscreenControl: false,
     streetViewControl: false,
-    styles: mapStyles, // Apply the custom styles to the map
+    styles: mapStyles,
 };
 
 type MapComponentProps = {
@@ -105,7 +105,30 @@ export function MapComponent({ environment, session_list }: MapComponentProps) {
         }));
     }, [environment]);
 
-    if (!isLoaded) return <div className="page-entry">Loading...</div>;
+    // Get waypoints and target for each session with a mission
+    const missions = useMemo(() => {
+        return session_list.sessions
+            .filter(session => session.mission) // Only sessions with a mission
+            .map(session => ({
+                id: session.agent_id,
+                waypoints: session.mission!.waypoints.map((wp) => ({
+                    lat: wp.lat,
+                    lng: wp.lng,
+                })),
+                target: {
+                    lat: session.mission!.target.lat,
+                    lng: session.mission!.target.lng,
+                }
+            }));
+    }, [session_list]);
+
+    if (!isLoaded) {
+        return (
+            <div>
+                <p>Loading ...</p>
+            </div>
+        );
+    }
 
     return (
         <div className="map-container">
@@ -147,6 +170,28 @@ export function MapComponent({ environment, session_list }: MapComponentProps) {
                             strokeWeight: 2,
                         }}
                     />
+                ))}
+
+                {/* Render waypoints and target for each mission */}
+                {missions.map(mission => (
+                    <React.Fragment key={mission.id}>
+                        {/* Render target marker */}
+                        <Marker
+                            position={mission.target}
+                            icon={{
+                                url: "http://maps.google.com/mapfiles/ms/icons/blue-dot.png",
+                            }}
+                        />
+                        {/* Render waypoints as a polyline */}
+                        <Polyline
+                            path={mission.waypoints}
+                            options={{
+                                strokeColor: "#0000FF",
+                                strokeOpacity: 0.8,
+                                strokeWeight: 2,
+                            }}
+                        />
+                    </React.Fragment>
                 ))}
             </GoogleMap>
         </div>

@@ -10,6 +10,13 @@ export enum ConnectionStatus {
     DISCONNECTED = "DISCONNECTED",
 }
 
+export interface Mission {
+    mission_id: number;
+    active: boolean;
+    target: Coordinates;
+    waypoints: Array<Coordinates>;
+}
+
 export interface DroneSession {
     agent_id: number;
     system_id: number;
@@ -17,6 +24,7 @@ export interface DroneSession {
     session_status: SessionStatus;
     coordinates: Coordinates;
     connection_status: ConnectionStatus;
+    mission?: Mission;
 }
 
 export interface SessionList {
